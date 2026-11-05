@@ -73,41 +73,16 @@ router.put('/:id', async function(req, res, next) {
         let { id } = req.params;
         let { name, price, stock } = req.body;
 
-        if (!mongoose.isValidObjectId(id)) {
-            return res.status(400).json({status: 400, message: 'Invalid product ID', data: null});
-        }
-
-        let updateData = {};
-
-        if (name !== undefined) {
-            if (typeof name !== 'string' || !name.trim()) {
-                return res.status(400).json({status: 400, message: 'Invalid name', data: null});
-            }
-            updateData.name = name;
-        }
-
-        if (price !== undefined) {
-            if (typeof price !== 'number' || !Number.isFinite(price) || price < 0) {
-                return res.status(400).json({status: 400, message: 'Invalid price', data: null});
-            }
-            updateData.price = price;
-        }
-
-        if (stock !== undefined) {
-            if (!Number.isInteger(stock) || stock < 0) {
-                return res.status(400).json({status: 400, message: 'Invalid stock', data: null});
-            }
-            updateData.stock = stock;
-        }
-
-        if (Object.keys(updateData).length === 0) {
-            return res.status(400).json({status: 400, message: 'No data to update', data: null});
+        const updateData = {
+            name: name,
+            price: price,
+            stock: stock
         }
 
         let product = await productSchema.findOneAndUpdate(
             {_id: id, storeId: req.auth.userId, isDeleted: false},
             updateData,
-            {new: true, runValidators: true}
+            {new: true}
         );
 
         if (!product) {
