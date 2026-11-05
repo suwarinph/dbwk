@@ -5,12 +5,16 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var productsRouter = require('./routes/products');
 var ordersRouter = require('./routes/orders');
 const authRoutes = require('./routes/auth');
+
 require('dotenv').config();
+console.log('JWT_SECRET loaded:', !!process.env.JWT_SECRET);
+
 require('./dbwk.js');
 
 //var userSchema = require('./models/user.model.js');
