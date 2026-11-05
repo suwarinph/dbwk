@@ -9,12 +9,12 @@ const registerUser = async (req, res) => {
         const { name, email, password } = req.body;
 
         if (!name || !email || !password) {
-        return res.status(400).json({ Status: 400, Message: 'Please provide all fields', Data: null });
+        return res.status(400).json({ status: 400, message: 'Please provide all fields', data: null });
         }
         const existingUser = await userSchema.findOne({ email });
 
         if (existingUser) {
-            return res.status(400).json({Status: 400,Message: 'Email already exists',Data: null});
+            return res.status(400).json({status: 400,message: 'Email already exists',data: null});
         }
 
         // Hash the password
@@ -30,9 +30,9 @@ const registerUser = async (req, res) => {
         });
 
         return res.status(201).json({
-        Status: 201,
-        Message: 'Register successful, waiting for approval',
-            Data: {
+        status: 201,
+        message: 'Register successful, waiting for approval',
+            data: {
             id: user._id,
             name: user.name,
             email: user.email,
@@ -42,7 +42,7 @@ const registerUser = async (req, res) => {
         });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ Status: 500, Message: 'Server error', Data: null });
+        return res.status(500).json({ status: 500, message: 'Server error', data: null });
   }
 };
 
@@ -51,25 +51,25 @@ const login = async (req, res) => {
         
         const { email, password } = req.body;
         if (typeof email !== 'string' || typeof password !== 'string' || !email.trim() || !password) {
-            return res.status(400).json({Status: 400,Message: 'Email and password are required',Data: null});
+            return res.status(400).json({status: 400,message: 'Email and password are required',data: null});
         }
 
         const user = await userSchema.findOne({ email });
 
         if (!user) {
-            return res.status(401).json({Status: 401,Message: 'Invalid email or password',Data: null});
+            return res.status(401).json({status: 401,message: 'Invalid email or password',data: null});
         }
 
         // ตรวจPassword
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
-            return res.status(401).json({Status: 401,Message: 'Invalid email or password',Data: null});
+            return res.status(401).json({status: 401,message: 'Invalid email or password',data: null});
         }
 
         // ตรวจสอบว่า Approve ยัง
         if (!user.isApproved) {
-            return res.status(401).json({Status: 401,Message: 'Waiting for admin approval',Data: null});
+            return res.status(401).json({status: 401,message: 'Waiting for admin approval',data: null});
         }
 
         if (!process.env.JWT_SECRET) {
@@ -87,10 +87,8 @@ const login = async (req, res) => {
             }
         );
 
-        return res.status(200).json({
-            Status: 200,
-            Message: 'Login successful',
-            Data: {
+        return res.status(200).json({status: 200,message: 'Login successful',
+            data: {
                 token,
                 user: {
                     id: user._id,
@@ -104,7 +102,7 @@ const login = async (req, res) => {
     } catch (error) {
         console.error(error);
 
-        return res.status(500).json({ Status: 500, Message: 'Internal server error', Data: null });
+        return res.status(500).json({ status: 500, message: 'Internal server error', data: null });
     }
 };
 
